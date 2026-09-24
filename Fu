@@ -1,4 +1,4 @@
--- Barny: Portal Gun v4 — Часть 2/2 (15 измерений)
+-- Barny: Portal Gun v5 — Часть 2/2 (15 измерений + фикс Oval)
 local Players = game:GetService("Players")
 local LP = Players.LocalPlayer
 
@@ -252,30 +252,32 @@ table.insert(Dimensions, function()
     return p + Vector3.new(0, 5, 0), "Мир Миссикс"
 end)
 
--- ========== ФУНКЦИЯ ВХОДА В ИЗМЕРЕНИЕ ==========
+-- ========== ФУНКЦИЯ ВХОДА В ИЗМЕРЕНИЕ (с фиксом Oval) ==========
 _G.BarnyPortal.EnterDimension = function(hrp)
     if _G.BarnyPortal.SavedPos == nil then
         _G.BarnyPortal.SavedPos = hrp.Position
     end
-    
+
     local dim = Dimensions[math.random(1, #Dimensions)]
     local targetPos, dimName = dim()
-    
+
     hrp.CFrame = CFrame.new(targetPos)
     hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-    
+
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "🌌 ИЗМЕРЕНИЕ",
         Text = dimName,
         Duration = 3
     })
-    
+
     if workspace:FindFirstChild("ExitPortal") then workspace.ExitPortal:Destroy() end
     local exitPos = targetPos + Vector3.new(0, 0, 15)
     local exitPortal = CreatePortal(workspace, exitPos, Vector3.new(0, 0, -1), "ExitPortal", _G.BarnyPortal.PortalColor)
-    local exitDisc = exitPortal:FindFirstChild("Disc")
-    if exitDisc then
-        exitDisc.Touched:Connect(function(hit)
+    
+    -- ФИКС: ищем "Oval" вместо "Disc"
+    local exitOval = exitPortal:FindFirstChild("Oval")
+    if exitOval then
+        exitOval.Touched:Connect(function(hit)
             local ch = hit.Parent
             if not ch or ch ~= LP.Character then return end
             local now = os.clock()
@@ -290,4 +292,4 @@ _G.BarnyPortal.EnterDimension = function(hrp)
     end
 end
 
-print("[Barny] Часть 2/2 загружена (15 измерений)")
+print("[Barny] Часть 2/2 загружена (15 измерений + фикс Oval)")
