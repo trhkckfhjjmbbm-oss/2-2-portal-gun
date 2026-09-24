@@ -1,0 +1,293 @@
+-- Barny: Portal Gun v4 — Часть 2/2 (15 измерений)
+local Players = game:GetService("Players")
+local LP = Players.LocalPlayer
+
+while not _G.BarnyPortal do task.wait(0.5) end
+
+local P = _G.BarnyPortal.P
+local CreatePortal = _G.BarnyPortal.CreatePortal
+local SetupTP = _G.BarnyPortal.SetupTP
+
+local Dimensions = {}
+
+-- 1. Неон-Сити
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimNeonCity"
+    local p = Vector3.new(5000, 500, 0)
+    P("Floor", Vector3.new(400,1,400), p, Color3.fromRGB(20,20,40), Enum.Material.Concrete, d)
+    for i = 1, 30 do
+        local h = math.random(30, 100)
+        local building = P("B"..i, Vector3.new(math.random(15,25), h, math.random(15,25)), p + Vector3.new(math.random(-180,180), h/2, math.random(-180,180)), Color3.fromRGB(40,40,60), Enum.Material.Concrete, d)
+        for j = 1, 3 do
+            local sign = P("Sign"..i.."_"..j, Vector3.new(3,1,0.2), building.Position + Vector3.new(0, math.random(-h/3,h/3), math.random(-1,1)*12), Color3.fromRGB(math.random(100,255), math.random(100,255), math.random(100,255)), Enum.Material.Neon, d)
+            local sl = Instance.new("PointLight")
+            sl.Color = sign.Color
+            sl.Range = 15
+            sl.Brightness = 3
+            sl.Parent = sign
+        end
+    end
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Неон-Сити"
+end)
+
+-- 2. Космос
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimSpace"
+    local p = Vector3.new(-5000, 500, 0)
+    P("Floor", Vector3.new(500,1,500), p, Color3.fromRGB(5,5,15), Enum.Material.Slate, d)
+    for i = 1, 50 do
+        local star = P("Star"..i, Vector3.new(math.random(2,6), math.random(2,6), math.random(2,6)), p + Vector3.new(math.random(-250,250), math.random(10,300), math.random(-250,250)), Color3.fromRGB(255,255,255), Enum.Material.Neon, d)
+        star.Shape = Enum.PartType.Ball
+        star.CanCollide = false
+    end
+    local planet = P("Planet", Vector3.new(80,80,80), p + Vector3.new(100, 150, 100), Color3.fromRGB(200,100,50), Enum.Material.SmoothPlastic, d)
+    planet.Shape = Enum.PartType.Ball
+    planet.CanCollide = false
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Космос"
+end)
+
+-- 3. Лава
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimLava"
+    local p = Vector3.new(0, 500, 5000)
+    P("Floor", Vector3.new(400,1,400), p, Color3.fromRGB(255,100,0), Enum.Material.Neon, d)
+    for i = 1, 20 do
+        P("Rock"..i, Vector3.new(math.random(10,25), math.random(8,20), math.random(10,25)), p + Vector3.new(math.random(-180,180), 5, math.random(-180,180)), Color3.fromRGB(60,30,20), Enum.Material.Slate, d)
+    end
+    local volcano = P("Volcano", Vector3.new(80,60,80), p, Color3.fromRGB(80,40,30), Enum.Material.Slate, d)
+    volcano.Shape = Enum.PartType.Cylinder
+    volcano.CFrame = CFrame.new(volcano.Position) * CFrame.Angles(0,0,math.rad(90))
+    local lavaTop = P("LavaTop", Vector3.new(20,5,20), p + Vector3.new(0,30,0), Color3.fromRGB(255,150,0), Enum.Material.Neon, d)
+    local lavaLight = Instance.new("PointLight")
+    lavaLight.Color = Color3.fromRGB(255,100,0)
+    lavaLight.Range = 50
+    lavaLight.Brightness = 8
+    lavaLight.Parent = lavaTop
+    d.Parent = workspace
+    return p + Vector3.new(0, 10, 0), "Лава-Мир"
+end)
+
+-- 4. Ледяной мир
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimIce"
+    local p = Vector3.new(5000, 500, 5000)
+    P("Floor", Vector3.new(400,1,400), p, Color3.fromRGB(220,240,255), Enum.Material.Ice, d)
+    for i = 1, 25 do
+        P("Ice"..i, Vector3.new(math.random(10,20), math.random(20,50), math.random(10,20)), p + Vector3.new(math.random(-180,180), 10, math.random(-180,180)), Color3.fromRGB(200,230,255), Enum.Material.Ice, d)
+    end
+    local igloo = P("Igloo", Vector3.new(20,15,20), p + Vector3.new(50, 7, 50), Color3.fromRGB(255,255,255), Enum.Material.Snow, d)
+    igloo.Shape = Enum.PartType.Ball
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Ледяной мир"
+end)
+
+-- 5. Джунгли
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimJungle"
+    local p = Vector3.new(-5000, 500, 5000)
+    P("Floor", Vector3.new(400,1,400), p, Color3.fromRGB(50,150,50), Enum.Material.Grass, d)
+    for i = 1, 40 do
+        local trunk = P("T"..i, Vector3.new(3, math.random(20,40), 3), p + Vector3.new(math.random(-180,180), 15, math.random(-180,180)), Color3.fromRGB(80,50,30), Enum.Material.Wood, d)
+        local leaves = P("L"..i, Vector3.new(15,15,15), trunk.Position + Vector3.new(0, 15, 0), Color3.fromRGB(30,120,30), Enum.Material.Grass, d)
+        leaves.Shape = Enum.PartType.Ball
+    end
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Джунгли"
+end)
+
+-- 6. Пустыня
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimDesert"
+    local p = Vector3.new(5000, 500, -5000)
+    P("Floor", Vector3.new(400,1,400), p, Color3.fromRGB(240,200,140), Enum.Material.Sand, d)
+    for i = 1, 3 do
+        local pyr = P("Pyr"..i, Vector3.new(30,30,30), p + Vector3.new(math.random(-150,150), 15, math.random(-150,150)), Color3.fromRGB(200,170,100), Enum.Material.Sand, d)
+        pyr.Shape = Enum.PartType.Wedge
+    end
+    for i = 1, 10 do
+        P("Cactus"..i, Vector3.new(3,10,3), p + Vector3.new(math.random(-180,180), 5, math.random(-180,180)), Color3.fromRGB(50,150,50), Enum.Material.Grass, d)
+    end
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Пустыня"
+end)
+
+-- 7. Подводный мир
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimUnderwater"
+    local p = Vector3.new(0, 500, -5000)
+    P("Floor", Vector3.new(400,1,400), p, Color3.fromRGB(200,220,240), Enum.Material.Sand, d)
+    for i = 1, 30 do
+        P("Coral"..i, Vector3.new(math.random(3,8), math.random(5,15), math.random(3,8)), p + Vector3.new(math.random(-180,180), 5, math.random(-180,180)), Color3.fromRGB(math.random(100,255), math.random(50,150), math.random(100,200)), Enum.Material.Neon, d)
+    end
+    local water = P("Water", Vector3.new(400, 200, 400), p + Vector3.new(0, 100, 0), Color3.fromRGB(100,150,255), Enum.Material.Glass, d)
+    water.Transparency = 0.7
+    water.CanCollide = false
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Подводный мир"
+end)
+
+-- 8. Киберпанк
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimCyberpunk"
+    local p = Vector3.new(-5000, 500, -5000)
+    P("Floor", Vector3.new(400,1,400), p, Color3.fromRGB(20,20,30), Enum.Material.Metal, d)
+    for i = 1, 20 do
+        local h = math.random(40, 120)
+        local building = P("CB"..i, Vector3.new(math.random(15,30), h, math.random(15,30)), p + Vector3.new(math.random(-180,180), h/2, math.random(-180,180)), Color3.fromRGB(30,30,50), Enum.Material.Metal, d)
+        local neon = P("Neon"..i, Vector3.new(3, h/2, 0.5), building.Position + Vector3.new(0, 0, -building.Size.Z/2 - 1), Color3.fromRGB(255,0,255), Enum.Material.Neon, d)
+        local nl = Instance.new("PointLight")
+        nl.Color = Color3.fromRGB(255,0,255)
+        nl.Range = 20
+        nl.Brightness = 4
+        nl.Parent = neon
+    end
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Киберпанк"
+end)
+
+-- 9. Пещера
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimCave"
+    local p = Vector3.new(5000, 500, 5000)
+    P("Floor", Vector3.new(300,1,300), p, Color3.fromRGB(60,50,40), Enum.Material.Slate, d)
+    P("Ceil", Vector3.new(300,1,300), p + Vector3.new(0, 50, 0), Color3.fromRGB(40,30,20), Enum.Material.Slate, d)
+    for i = 1, 30 do
+        local crystal = P("Crystal"..i, Vector3.new(math.random(2,6), math.random(8,20), math.random(2,6)), p + Vector3.new(math.random(-140,140), 10, math.random(-140,140)), Color3.fromRGB(math.random(100,255), math.random(100,255), math.random(100,255)), Enum.Material.Neon, d)
+        local cl = Instance.new("PointLight")
+        cl.Color = crystal.Color
+        cl.Range = 15
+        cl.Brightness = 3
+        cl.Parent = crystal
+    end
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Пещера"
+end)
+
+-- 10. Облака
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimClouds"
+    local p = Vector3.new(0, 1500, 0)
+    for i = 1, 15 do
+        P("Island"..i, Vector3.new(math.random(20,50), math.random(5,15), math.random(20,50)), p + Vector3.new(math.random(-250,250), math.random(-50,50), math.random(-250,250)), Color3.fromRGB(80,200,80), Enum.Material.Grass, d)
+    end
+    P("Center", Vector3.new(60, 10, 60), p, Color3.fromRGB(80,200,80), Enum.Material.Grass, d)
+    d.Parent = workspace
+    return p + Vector3.new(0, 10, 0), "Облака"
+end)
+
+-- 11. Концентратор
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimConcentrator"
+    local p = Vector3.new(-5000, 500, 5000)
+    P("Floor", Vector3.new(200,1,200), p, Color3.fromRGB(40,40,60), Enum.Material.Metal, d)
+    for i = 1, 10 do
+        local pylon = P("Pylon"..i, Vector3.new(5, 40, 5), p + Vector3.new(math.cos(i * math.pi / 5) * 60, 20, math.sin(i * math.pi / 5) * 60), Color3.fromRGB(100,100,150), Enum.Material.Neon, d)
+        local pl = Instance.new("PointLight")
+        pl.Color = Color3.fromRGB(0,255,100)
+        pl.Range = 15
+        pl.Brightness = 3
+        pl.Parent = pylon
+    end
+    local center = P("Center", Vector3.new(20,20,20), p + Vector3.new(0, 20, 0), Color3.fromRGB(0,255,100), Enum.Material.Neon, d)
+    center.Shape = Enum.PartType.Ball
+    center.CanCollide = false
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Концентратор"
+end)
+
+-- 12. Цитадель Риков
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimCitadel"
+    local p = Vector3.new(5000, 500, -5000)
+    P("Floor", Vector3.new(300,1,300), p, Color3.fromRGB(150,150,150), Enum.Material.Marble, d)
+    for i = 1, 6 do
+        local h = math.random(60, 150)
+        P("Tower"..i, Vector3.new(20, h, 20), p + Vector3.new(math.cos(i * math.pi / 3) * 80, h/2, math.sin(i * math.pi / 3) * 80), Color3.fromRGB(100,100,120), Enum.Material.Concrete, d)
+    end
+    P("Center", Vector3.new(40, 200, 40), p, Color3.fromRGB(150,100,200), Enum.Material.Neon, d)
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Цитадель Риков"
+end)
+
+-- 13. Мир Морти
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimMortyWorld"
+    local p = Vector3.new(-5000, 500, -5000)
+    P("Floor", Vector3.new(400,1,400), p, Color3.fromRGB(255,255,100), Enum.Material.Sand, d)
+    for i = 1, 30 do
+        P("Candy"..i, Vector3.new(math.random(3,8), math.random(5,15), math.random(3,8)), p + Vector3.new(math.random(-180,180), 5, math.random(-180,180)), Color3.fromRGB(math.random(200,255), math.random(100,200), math.random(150,255)), Enum.Material.SmoothPlastic, d)
+    end
+    for i = 1, 7 do
+        local color = Color3.fromHSV((i-1)/7, 1, 1)
+        P("Rainbow"..i, Vector3.new(3, 3, 200), p + Vector3.new(-80 + i*10, 50 + i*5, 0), color, Enum.Material.Neon, d)
+    end
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Мир Морти"
+end)
+
+-- 14. Гэзorpazorp
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimGazorp"
+    local p = Vector3.new(3000, 500, -3000)
+    P("Floor", Vector3.new(400,1,400), p, Color3.fromRGB(150,80,200), Enum.Material.Sand, d)
+    for i = 1, 25 do
+        P("Crystal"..i, Vector3.new(math.random(3,8), math.random(10,30), math.random(3,8)), p + Vector3.new(math.random(-180,180), 10, math.random(-180,180)), Color3.fromRGB(200,100,255), Enum.Material.Neon, d)
+    end
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Гэзorpazorp"
+end)
+
+-- 15. Мир Миссикс
+table.insert(Dimensions, function()
+    local d = Instance.new("Model") d.Name = "DimMeSeeks"
+    local p = Vector3.new(-3000, 500, -3000)
+    P("Floor", Vector3.new(400,1,400), p, Color3.fromRGB(100,0,100), Enum.Material.Neon, d)
+    for i = 1, 50 do
+        local r = P("Random"..i, Vector3.new(math.random(2,10), math.random(2,10), math.random(2,10)), p + Vector3.new(math.random(-180,180), math.random(5,50), math.random(-180,180)), Color3.fromRGB(math.random(0,255), math.random(0,255), math.random(0,255)), Enum.Material.Neon, d)
+        if math.random(1,2) == 1 then r.Shape = Enum.PartType.Ball end
+    end
+    d.Parent = workspace
+    return p + Vector3.new(0, 5, 0), "Мир Миссикс"
+end)
+
+-- ========== ФУНКЦИЯ ВХОДА В ИЗМЕРЕНИЕ ==========
+_G.BarnyPortal.EnterDimension = function(hrp)
+    if _G.BarnyPortal.SavedPos == nil then
+        _G.BarnyPortal.SavedPos = hrp.Position
+    end
+    
+    local dim = Dimensions[math.random(1, #Dimensions)]
+    local targetPos, dimName = dim()
+    
+    hrp.CFrame = CFrame.new(targetPos)
+    hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+    
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "🌌 ИЗМЕРЕНИЕ",
+        Text = dimName,
+        Duration = 3
+    })
+    
+    if workspace:FindFirstChild("ExitPortal") then workspace.ExitPortal:Destroy() end
+    local exitPos = targetPos + Vector3.new(0, 0, 15)
+    local exitPortal = CreatePortal(workspace, exitPos, Vector3.new(0, 0, -1), "ExitPortal", _G.BarnyPortal.PortalColor)
+    local exitDisc = exitPortal:FindFirstChild("Disc")
+    if exitDisc then
+        exitDisc.Touched:Connect(function(hit)
+            local ch = hit.Parent
+            if not ch or ch ~= LP.Character then return end
+            local now = os.clock()
+            if now - _G.BarnyPortal.LastTP < _G.BarnyPortal.TELEPORT_CD then return end
+            _G.BarnyPortal.LastTP = now
+            local hrp2 = ch:FindFirstChild("HumanoidRootPart")
+            if hrp2 and _G.BarnyPortal.SavedPos then
+                hrp2.CFrame = CFrame.new(_G.BarnyPortal.SavedPos)
+                hrp2.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+            end
+        end)
+    end
+end
+
+print("[Barny] Часть 2/2 загружена (15 измерений)")
